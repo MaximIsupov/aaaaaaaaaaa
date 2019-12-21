@@ -1,0 +1,52 @@
+import java.util.*;
+import java.awt.*;
+import javax.swing.*;
+
+public class Main {
+    static public void main(String args[]){
+       Graphic gr=new Graphic("Моё окно");
+
+    }
+}
+
+import java.util.*;
+import java.awt.*;
+import javax.swing.*;
+import java.awt.geom.Area;
+
+public class Graphic extends JFrame {
+    Graphic(String s){
+        super(s);
+        setLayout(null);
+        setSize(500,500);
+        setVisible(true);
+        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+    }
+    public void paint(Graphics g){
+        g.setColor(Color.RED);
+
+        g.drawOval(90, 50, 100, 100);
+
+        g.drawLine(140, 100, 140, 200);
+        g.drawLine(140,200,300, 100);
+        g.drawLine(300, 100, 140,100);
+
+        g.drawLine(50, 50, 90, 50);
+        g.drawLine(90,50,300, 120);
+        g.drawLine(300, 120, 150,170);
+        g.drawLine(150, 170, 75, 100);
+        g.drawLine(75,100,50, 50);
+        
+        
+
+        g.setColor(Color.BLUE);
+        g.drawLine(140, 100, 140, 150);
+        g.drawLine(190, 100, 140,100);
+        g.drawArc(90, 50, 100, 100, 0, -90);
+        int x[]=new int[3];x[0]=140;x[1]=140;x[2]=190;
+        int y[]=new int[3];y[0]=100;y[1]=150;y[2]=100;
+        g.fillPolygon(x,y,3);
+        g.fillArc(90, 50, 100, 100, 0, -90);
+        
+        
+}}
