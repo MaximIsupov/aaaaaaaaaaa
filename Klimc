@@ -1,0 +1,355 @@
+//Тут стек, доп функции, дек, обратная польская нотация, юнит тест. Может еще что есть, посмотри
+
+public class Stack {
+    private int a[]=new int[10];
+    int top=0;
+    Stack(){
+        for (int i=0; i<10; i++) {
+            a[i] = 0;
+        }
+    }
+
+    void pushEl(int e) throws StackOverflowException{
+        if(top>=10){
+            throw new StackOverflowException("Ошибка! Стек переполнен");
+        }
+        else{ a[top]=e;
+        top++;}
+    }
+
+    int getTop(){
+        return a[top-1];
+    }
+
+    void popEl() throws StackIsEmptyException{
+        if(top<0){
+            throw new StackIsEmptyException("Ошибка! Попытка удаления элемента из пустого стека");
+        }
+        else top--;
+    }
+
+    void printSt(){
+        for (int i=0; i<top; i++){
+            System.out.print(a[i]+" ");
+            System.out.println();
+        }
+    }
+
+    int findMin(){
+        int min=a[0];
+        for (int i=1; i<top; i++){
+            if (a[i]<min) min=a[i];
+        }
+        return min;
+    }
+
+    int findMax(){
+        int max=a[0];
+        for (int i=1; i<top; i++){
+            if (a[i]>max) max=a[i];
+        }
+        return max;
+    }
+
+    void invertStek(){
+          for (int i=0; i<(top-1)/2; i++){
+              int k=a[i];
+              a[i]=a[top-1-i];
+              a[top-i-1]=k;
+          }
+    }
+
+    void morphStek(){
+        if ((top-1)%2==0){
+            a[(top-1)/2]=0;
+        }
+        else{
+            a[(top-1)/2+1]=0;
+        }
+    }
+
+    void unitTest(){
+
+        int n = 10;
+
+        System.out.println("Тестовый запуск стека");
+
+        for(int i = 0;i<n+1;i++){
+
+            try{
+                System.out.println("Попытка добавления нового элемента в стек:");
+                pushEl(i+4);
+                System.out.println("Элемент успешно добавлен в стек!");
+                System.out.println(getTop());
+            }
+
+            catch(StackOverflowException m){
+                System.out.println(m.getMessage());
+            }
+        }
+
+        int max=13;
+        int min=4;
+
+        if (max==findMax()) System.out.println("Поиск максимального элемента проходит корректно");
+        if (min==findMin()) System.out.println("Поиск минимального элемента проходит корректно");
+
+        for(int i = top;i>=-1;i--){
+
+            try{
+
+                System.out.println("Попытка удаления элемента из стека:");
+                System.out.println(i+4);
+                popEl();
+                System.out.println("Элемент удален успешно");
+            }
+
+            catch(StackIsEmptyException m){
+                System.out.println(m.getMessage());
+            }
+        }
+        top=0;
+}}
+
+---------------------------------------------------------------------------------------------------
+
+public class StackIsEmptyException extends Exception {
+    public StackIsEmptyException(String message){
+        super(message);
+    }
+}
+
+----------------------------------------------------------------------------------------------------
+
+import java.util.*;
+import java.lang.*;
+import java.io.*;
+
+public class Main {
+    public static Double calc(List<String> postfix) {
+        Deque<Double> stack = new ArrayDeque<Double>();
+        for (String x : postfix) {
+            if (x.equals("sqrt")) stack.push(Math.sqrt(stack.pop()));
+            else if (x.equals("cube")) {
+                Double tmp = stack.pop();
+                stack.push(tmp * tmp * tmp);
+            }
+            else if (x.equals("pow10")) stack.push(Math.pow(10, stack.pop()));
+            else if (x.equals("+")) stack.push(stack.pop() + stack.pop());
+            else if (x.equals("-")) {
+                Double b = stack.pop(), a = stack.pop();
+                stack.push(a - b);
+            }
+            else if (x.equals("*")) stack.push(stack.pop() * stack.pop());
+            else if (x.equals("/")) {
+                Double b = stack.pop(), a = stack.pop();
+                stack.push(a / b);
+            }
+            else if (x.equals("u-")) stack.push(-stack.pop());
+            else stack.push(Double.valueOf(x));
+        }
+        return stack.pop();
+    }
+
+
+    public static void main(String[] args){
+
+        Stack st= new Stack();
+
+        st.unitTest();
+        for (int i=0; i<10; i++){
+            try{st.pushEl(i);}
+            catch(StackOverflowException m){
+                System.out.println(m.getMessage());
+            }
+        }
+        int a=st.getTop();
+        System.out.println(a);
+       try{st.popEl();}
+       catch(StackIsEmptyException m){
+           System.out.println(m.getMessage());
+       }
+
+        int min=st.findMin();
+        st.printSt();
+
+        System.out.println("Минимальный элемент="+min);
+        System.out.println("Максимальный элемент="+st.findMax());
+
+        st.invertStek();
+        System.out.println("Инвертированный стек:");
+        st.printSt();
+
+        st.morphStek();
+        System.out.println("Измененный стек:");
+        st.printSt();
+
+
+
+
+        Dack d=new Dack();
+
+
+        for (int i=0; i<10; i++){
+            try{d.addRight(i);}
+            catch(StackOverflowException m){
+                System.out.println(m.getMessage());
+            }
+        }
+
+        try{d.pushEl(5);}
+        catch(StackOverflowException m){
+            System.out.println(m.getMessage());
+        }
+
+        System.out.println("Дек:");
+        d.printDeck();
+        System.out.println("Введите уравнение:");
+        Scanner in = new Scanner(System.in);
+        String s = in.nextLine();
+        ExpressionParser n = new ExpressionParser();
+        List<String> expression = n.parse(s);
+        for (String x : expression) System.out.print(x + " ");
+        System.out.println();
+        System.out.println(calc(expression));
+    }
+}
+
+-----------------------------------------------------------------------------------------------------------------
+
+import java.util.*;
+import java.lang.*;
+import java.io.*;
+
+public class ExpressionParser {
+    private static String operators = "+-*/";
+    private static String delimiters = "() " + operators;
+    private static boolean isDelimiter(String token) {
+        if (token.length() != 1) return false;
+        for (int i = 0; i < delimiters.length(); i++) {
+            if (token.charAt(0) == delimiters.charAt(i)) return true;
+        }
+        return false;
+    }
+
+    private static boolean isOperator(String token) {
+        if (token.equals("u-")) return true;
+        for (int i = 0; i < operators.length(); i++) {
+            if (token.charAt(0) == operators.charAt(i)) return true;
+        }
+        return false;
+    }
+
+    private static boolean isFunction(String token) {
+        if (token.equals("sqrt") || token.equals("cube") || token.equals("pow10")) return true;
+        return false;
+    }
+
+    private static int priority(String token) {
+        if (token.equals("(")) return 1;
+        if (token.equals("+") || token.equals("-")) return 2;
+        if (token.equals("*") || token.equals("/")) return 3;
+        return 4;
+    }
+
+    public static List<String> parse(String infix) {
+        List<String> postfix = new ArrayList<String>();
+        Deque<String> stack = new ArrayDeque<String>();
+        StringTokenizer tokenizer = new StringTokenizer(infix, delimiters, true);
+        String prev = "";
+        String curr = "";
+        while (tokenizer.hasMoreTokens()) {
+            curr = tokenizer.nextToken();
+            if (curr.equals(" ")) continue;
+            if (isFunction(curr)) stack.push(curr);
+            else if (isDelimiter(curr)) {
+                if (curr.equals("(")) stack.push(curr);
+                else if (curr.equals(")")) {
+                    while (!stack.peek().equals("(")) {
+                        postfix.add(stack.pop());
+                    }
+                    stack.pop();
+                    if (!stack.isEmpty() && isFunction(stack.peek())) {
+                        postfix.add(stack.pop());
+                    }
+                }
+                else {
+                    if (curr.equals("-") && (prev.equals("") || (isDelimiter(prev)  && !prev.equals(")")))) {
+                        curr = "u-";
+                    }
+                    else {
+                        while (!stack.isEmpty() && (priority(curr) <= priority(stack.peek()))) {
+                            postfix.add(stack.pop());
+                        }
+
+                    }
+                    stack.push(curr);
+                }
+
+            }
+
+            else {
+                postfix.add(curr);
+            }
+            prev = curr;
+        }
+
+        while (!stack.isEmpty()) {
+            if (isOperator(stack.peek())) postfix.add(stack.pop());
+        }
+        return postfix;
+    }
+}
+
+
+-----------------------------------------------------------------------------------------------------------------------------
+
+
+ public class Dack extends Stack {
+
+        int topRight=9;
+        int topLeft=0;
+        int[] dack;
+        int top;
+        Dack(
+        ){
+            dack=new int[10];
+        }
+        void addRight(int elem)throws StackOverflowException{
+            if(topRight<0){
+                throw new StackOverflowException("ERROR! Дек Переполнен");
+            }
+            else{
+                dack[topRight] = elem;
+                topRight--;
+            }
+        }
+        public int getRightElem(){
+            int elem;
+                elem = dack[topRight];
+            return elem;
+        }
+
+        public int getLeftElem(){
+            int elem;
+            elem = dack[topLeft];
+            return elem;
+        }
+
+        void printDeck(){
+            for (int i=topRight+1; i<10; i++){
+                System.out.print(dack[i] + " ");
+                System.out.println();
+            }
+        }
+        @Override
+        public void pushEl(int e) throws StackOverflowException{
+            super.pushEl(e);
+        }
+        public int getTop(){
+            return super.getTop();
+        }
+        }
+
+
+--------------------------------------------------------------------------------------------------------------------------------
