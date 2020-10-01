@@ -271,3 +271,123 @@
            (map
             (fn [[k v]] [k (inc v)])
             {:a 1 :b 2}))))
+
+
+7
+
+
+(meditations
+  "Calling a function is like giving it a hug with parentheses"
+  (= 81 (square 9))
+
+  "Functions are usually defined before they are used"
+  (= 20 (multiply-by-ten 2))
+
+  "But they can also be defined inline"
+  (= 10 ((fn [n] (* 5 n)) 2))
+
+  "Or using an even shorter syntax"
+  (= 60 (#(* 15 %) 4))
+
+  "Even anonymous functions may take multiple arguments"
+  (= 15 (#(+ %1 %2 %3) 4 5 6))
+
+  "Arguments can also be skipped"
+  (= "AACC" (#(str "AA" %2) "bb" "CC"))
+
+  "One function can beget another"
+  (= 9 (((fn [] + )) 4 5))
+
+  "Functions can also take other functions as input"
+  (= 20 ((fn [f] (f 4 5)) * ))
+
+  "Higher-order functions take function arguments"
+  (= 25 ((fn [f] (f 5)) (fn [n] (* n n))))
+
+  "But they are often better written using the names of functions"
+  (= 25 ((fn [f] (f 5)) square))
+  
+  
+  8
+  
+  
+  (defn explain-exercise-velocity [exercise-term]
+  (case exercise-term
+        :bicycling        "pretty fast"
+        :jogging          "not super fast"
+        :walking          "not fast at all"
+        "is that even exercise?"))
+
+(meditations
+  "You will face many decisions"
+  (= :a (if (false? (= 4 5)) :a :b))
+
+  "Some of them leave you no alternative"
+  (= [] (if (> 4 3)
+          []))
+
+  "And in such a situation you may have nothing"
+  (= nil (if (nil? 0)
+          [:a :b :c]))
+
+  "In others your alternative may be interesting"
+  (= :glory (if (not (empty? ()))
+              :doom
+              :glory))
+
+  "You may have a multitude of possible paths"
+  (let [x 5]
+    (= :your-road (cond (= x 4) :road-not-taken
+                        (= x 3) :another-road-not-taken
+                        :else :your-road)))
+
+  "Or your fate may be sealed"
+  (= 'doom (if-not (zero? 1)
+          'doom
+          'more-doom))
+
+  "In case of emergency, go fast"
+  (= "pretty fast"
+     (explain-exercise-velocity :bicycling))
+
+  "But admit it when you don't know what to do"
+  (= "is that even exercise?"
+     (explain-exercise-velocity :watching-tv)))
+
+
+
+9
+
+
+(meditations
+  "The map function relates a sequence to another"
+  (= [4 8 12] (map (fn [x] (* 4 x)) [1 2 3]))
+
+  "You may create that mapping"
+  (= [1 4 9 16 25] (map (fn [x] (* x x)) [1 2 3 4 5]))
+
+  "Or use the names of existing functions"
+  (= [false false true false false] (map nil? [:a :b nil :c :d]))
+
+  "A filter can be strong"
+  (= [] (filter (fn [x] false) '(:anything :goes :here)))
+
+  "Or very weak"
+  (= '(:anything :goes :here) (filter (fn [x] true) '(:anything :goes :here)))
+
+  "Or somewhere in between"
+  (= [10 20 30] (filter (fn [x] __) [10 20 30 40 50 60 70 80]))
+
+  "Maps and filters may be combined"
+  (= [10 20 30] (map (fn [x] __) (filter (fn [x] __) [1 2 3 4 5 6 7 8])))
+
+  "Reducing can increase the result"
+  (= __ (reduce (fn [a b] (* a b)) [1 2 3 4]))
+
+  "You can start somewhere else"
+  (= 2400 (reduce (fn [a b] (* a b)) __ [1 2 3 4]))
+
+  "Numbers are not the only things one can reduce"
+  (= "longest" (reduce (fn [a b]
+                         (if (< __ __) b a))
+                       ["which" "word" "is" "longest"])))
