@@ -1,0 +1,55 @@
+[System]
+Name='ZachBook'
+Type='mamdani'
+Version=2.0
+NumInputs=3
+NumOutputs=1
+NumRules=5
+AndMethod='min'
+OrMethod='max'
+ImpMethod='min'
+AggMethod='max'
+DefuzzMethod='centroid'
+
+[Input1]
+Name='История'
+Range=[2 5]
+NumMFs=4
+MF1='Неудовлетворительно':'trapmf',[2 2 2.4 2.8]
+MF2='Удовлетворительно':'trapmf',[2.2 2.55 3.5 3.9]
+MF3='Хорошо':'trapmf',[3.2 3.6 4.4 4.7]
+MF4='Отлично':'trapmf',[4.2 4.5 5 5]
+
+[Input2]
+Name='Психология'
+Range=[2 5]
+NumMFs=4
+MF1='Неудовлетворительно':'trapmf',[2 2 2.4 2.7]
+MF2='Удовлетворительно':'trapmf',[2.3 2.6 3.4 3.7]
+MF3='Хорошо':'trapmf',[3.3 3.6 4.4 4.7]
+MF4='Отлично':'trapmf',[4.3 4.5 5 5]
+
+[Input3]
+Name='ЭВМ'
+Range=[2 5]
+NumMFs=4
+MF1='Неудовлетворительно':'trapmf',[2 2 2.4 2.7]
+MF2='Удовлетворительно':'trapmf',[2.3 2.6 3.4 3.7]
+MF3='Хорошо':'trapmf',[3.3 3.6 4.3 4.6]
+MF4='Отлично':'trapmf',[4.3 4.6 5 5]
+
+[Output1]
+Name='Статус'
+Range=[0 8]
+NumMFs=4
+MF1='Двоечник':'trimf',[0 1 2]
+MF2='Троешник':'trimf',[2 3 4]
+MF3='Хорошист':'trimf',[4 5 6]
+MF4='Отличник':'trimf',[6 7 8]
+
+[Rules]
+1 1 1, 1 (1) : 2
+4 4 4, 4 (1) : 1
+3 3 3, 3 (1) : 1
+2 2 2, 2 (0.7) : 2
+3 3 3, 3 (0.3) : 2
