@@ -1,0 +1,163 @@
+many decisions" 
+ (= :a (if (false? (= 4 5)) 
+ :a 
+ :b)) 
+ 
+ "Some of them leave you no alternative" 
+ (= [] (if (> 4 3) 
+ [])) 
+ 
+ "And in such a situation you may have nothing" 
+ (= nil (if (nil? 0) 
+ [:a :b :c])) 
+ 
+ "In others your alternative may be interesting" 
+ (= :glory (if (not (empty? ())) 
+ :doom 
+ :glory)) 
+ 
+ "You may have a multitude of possible paths" 
+ (let [x 5] 
+ (= :your-road (cond (= x 1) :road-not-taken 
+ (= x 2) :another-road-not-taken 
+ :else :your-road))) 
+ 
+ "Or your fate may be sealed" 
+ (= 'doom (if-not (zero? 1) 
+ 'doom 
+ 'more-doom)) 
+ 
+ "In case of emergency, go fast" 
+ (= "pretty fast" 
+ (explain-exercise-velocity :bicycling)) 
+ 
+ "But admit it when you don't know what to do" 
+ (= "is that even exercise?" 
+ (explain-exercise-velocity :watching-tv)) 
+ 
+ 
+9 задание 
+ 
+ 
+ 
+"The map function relates a sequence to another" 
+ (= [4 8 12] (map (fn [x] (* 4 x)) [1 2 3])) 
+ 
+ "You may create that mapping" 
+ (= [1 4 9 16 25] (map (fn [x] (* x x)) [1 2 3 4 5])) 
+ 
+ "Or use the names of existing functions" 
+ (= [false false true false false] (map nil? [:a :b nil :c :d])) 
+ 
+ "A filter can be strong" 
+ (= () (filter (fn [x] false) '(:anything :goes :here))) 
+ 
+ "Or very weak" 
+ (= '(:anything :goes :here) (filter (fn [x] true) '(:anything :goes :here))) 
+ 
+ "Or somewhere in between" 
+ (= [10 20 30] (filter (fn [x] (< x 40)) [10 20 30 40 50 60 70 80])) 
+ 
+ "Maps and filters may be combined" 
+ (= [10 20 30] (map (fn [x] (* x 10)) (filter (fn [x] (< x 4)) [1 2 3 4 5 6 7 8]))) 
+ 
+ "Reducing can increase the result" 
+ (= 24 (reduce (fn [a b] (* a b)) [1 2 3 4])) 
+ 
+ "You can start somewhere else" 
+ (= 2400 (reduce (fn [a b] (* a b)) 100 [1 2 3 4])) 
+ 
+ "Numbers are not the only things one can reduce" 
+ (= "longest" (reduce (fn [a b] 
+ (if (< (list a b)) b a)) 
+ ["which" "word" "is" "longest"])) 
+ 
+ 
+ 
+10 задание 
+ 
+ 
+(defn hello 
+ ([] "Hello World!") 
+ ([a] (str "Hello, you silly " a ".")) 
+ ([a & more] (str "Hello to this group: " 
+ (apply str 
+ (interpose ", " (cons a more))) 
+ "!"))) 
+ 
+(defmulti diet (fn [x] (:eater x))) (:a {:a 1 :b 2}) 
+(defmethod diet :herbivore [a] (str (:name a) " eats veggies.")) 
+(defmethod diet :carnivore [a] (str (:name a) " eats animals.")) 
+(defmethod diet :default [a] (str "I don't know what " (:name a) " eats.")) 
+ 
+(meditations 
+ "Some functions can be used in different ways - with no arguments" 
+ (= "Hello World!" (hello)) 
+ 
+ "With one argument" 
+ (= "Hello, you silly world." (hello "world")) 
+ 
+ "Or with many arguments" 
+ (="Hello to this group: Peter, Paul, Mary!" 
+ (hello "Peter" "Paul" "Mary")) 
+ 
+ "Multimethods allow more complex dispatching" 
+ (= "Bambi eats veggies." 
+ (diet {:species "deer" :name "Bambi" :age 1 :eater :herbivore})) 
+ 
+ "Animals have different names" 
+ (= "Thumper eats veggies." 
+ (diet {:species "rabbit" :name "Thumper" :age 1 :eater :herbivore})) 
+ 
+ "Different methods are used depending on the dispatch function result" 
+ (= "Simba eats animals." 
+ (diet {:species "lion" :name "Simba" :age 1 :eater :carnivore})) 
+ 
+ "You may use a default method when no others match" 
+ (= "I don't know what Rich Hickey eats." 
+ (diet {:name "Rich Hickey"}))) 
+ 
+ 
+ 
+11 задание 
+ 
+ 
+ 
+"There are many ways to generate a sequence" 
+ (= '(1 2 3 4) (range 1 5)) 
+ 
+ "The range starts at the beginning by default" 
+ (= '(0 1 2 3 4) (range 5)) 
+ 
+ "Only take what you need when the sequence is large" 
+ (= [0 1 2 3 4 5 6 7 8 9] 
+ (take 10 (range 100))) 
+ 
+ "Or limit results by dropping what you don't need" 
+ (= [95 96 97 98 99] 
+ (drop 95 (range 100))) 
+ 
+ "Iteration provides an infinite lazy sequence" 
+ (= '(1 2 4 8 16 32 64 128)(take 8 (iterate (fn [x] (* x 2)) 1))) 
+ 
+ "Repetition is key" 
+ (= [:a :a :a :a :a :a :a :a :a :a] 
+ (repeat 10 :a)) 
+ 
+ "Iteration can be used for repetition" 
+ (= (repeat 100 "hello") 
+ (take 100 (iterate (fn [x](str x)) "hello"))) 
+ 
+ 
+12 задание 
+ 
+ 
+ 
+ "Sequence comprehensions can bind each element in turn to a symbol" 
+ (= '(0 1 2 3 4 5) 
+ (for [x (range 6)] 
+ x)) 
+ 
+ "They can easily emulate mapping" 
+ (= '(0 1 4 9 16 25) 
+ (map (fn [x] (*
