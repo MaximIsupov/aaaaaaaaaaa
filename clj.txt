@@ -393,7 +393,45 @@
 
 10.
 
-
+(defn hello 
+ ([] "Hello World!") 
+ ([a] (str "Hello, you silly " a ".")) 
+ ([a & more] (str "Hello to this group: " 
+ (apply str 
+ (interpose ", " (cons a more))) 
+ "!"))) 
+ 
+(defmulti diet (fn [x] (:eater x))) (:a {:a 1 :b 2}) 
+(defmethod diet :herbivore [a] (str (:name a) " eats veggies.")) 
+(defmethod diet :carnivore [a] (str (:name a) " eats animals.")) 
+(defmethod diet :default [a] (str "I don't know what " (:name a) " eats.")) 
+ 
+(meditations 
+ "Some functions can be used in different ways - with no arguments" 
+ (= "Hello World!" (hello)) 
+ 
+ "With one argument" 
+ (= "Hello, you silly world." (hello "world")) 
+ 
+ "Or with many arguments" 
+ (="Hello to this group: Peter, Paul, Mary!" 
+ (hello "Peter" "Paul" "Mary")) 
+ 
+ "Multimethods allow more complex dispatching" 
+ (= "Bambi eats veggies." 
+ (diet {:species "deer" :name "Bambi" :age 1 :eater :herbivore})) 
+ 
+ "Animals have different names" 
+ (= "Thumper eats veggies." 
+ (diet {:species "rabbit" :name "Thumper" :age 1 :eater :herbivore})) 
+ 
+ "Different methods are used depending on the dispatch function result" 
+ (= "Simba eats animals." 
+ (diet {:species "lion" :name "Simba" :age 1 :eater :carnivore})) 
+ 
+ "You may use a default method when no others match" 
+ (= "I don't know what Rich Hickey eats." 
+ (diet {:name "Rich Hickey"}))) 
 
 11.
 
@@ -423,36 +461,297 @@
      (take 100 (iterate str "hello"))))
      
      
-     12.
-     
-     
-      (= '(0 1 2 3 4 5)
-     (for [x (range 6)] x))
+    12 
+ 
+ 
+ 
+ "Sequence comprehensions can bind each element in turn to a symbol" 
+ (= '(0 1 2 3 4 5) 
+ (for [x (range 6)] 
+ x)) 
+ 
+ "They can easily emulate mapping" 
+ (= '(0 1 4 9 16 25) 
+ (map (fn [x] (*"The quote affects all of its arguments, not just the top level" 
+ (= (list 1 '(+ 2 3)) '(1 (+ 2 3))) 
+ 
+ "Syntax-quote (`) acts similarly to the normal quote" 
+ (= (list 1 2 3) `(1 2 3) '(1 2 3)) 
+ 
+ "Unquote (~) within a syntax-quoted expression lets you mark specific expressions as requiring evaluation" 
+ (= (list 1 5) `(1 ~(+ 2 3)) '(1 5)))
+x x)) 
+ (range 6)) 
+ (for [x (range 6)] 
+ (* x x))) 
+ 
+ "And also filtering" 
+ (= '(1 3 5 7 9) 
+ (filter odd? (range 10)) 
+ (for [x (range 10) :when (odd? x)] 
+ x)) 
+ 
+ "Combinations of these transformations is trivial" 
+ (= '(1 9 25 49 81) 
+ (map (fn [x] (* x x)) 
+ (filter odd? (range 10))) 
+ (for [x (range 10) :when (odd? x)] 
+ (* x x))) 
+ 
+ "More complex transformations simply take multiple binding forms" 
+ (= [[:top :left] [:top :middle] [:top :right] 
+ [:middle :left] [:middle :middle] [:middle :right] 
+ [:bottom :left] [:bottom :middle] [:bottom :right]] 
+ (for [row [:top :middle :bottom] 
+ column [:left :middle :right]] 
+ [row column] )) 
+ 
+13 
+ 
+ 
+(defn square [x] (* x x)) 
+ 
+(meditations 
+ "One may know what they seek by knowing what they do not seek" 
+ (= [true false true] (let [not-a-symbol? (complement symbol?)] 
+ (map not-a-symbol? [:a 'b "c"]))) 
+ 
+ "Praise and 'complement' may help you separate the wheat from the chaff" 
+ (= [:wheat "wheat" 'wheat] 
+ (let [not-nil? (complement nil?)] 
+ (filter not-nil? [nil :wheat nil "wheat" nil 'wheat nil]))) 
+ 
+ "Partial functions allow procrastination" 
+ (= 20 (let [multiply-by-5 (partial * 5)] 
+ (multiply-by-5 4))) 
+ 
+ "Don't forget: first things first" 
+ (= [:a :b :a :b] 
+ (let [ab-adder (partial concat [:a :b])] 
+ (ab-adder [:a :b]))) 
+ 
+ "Functions can join forces as one 'composed' function" 
+ (= 25 (let [inc-and-square (comp square inc)] 
+ (inc-and-square 4))) 
+ 
+ "Have a go on a double dec-er" 
+ (= 8 (let [double-dec (comp dec dec)] 
+ (double-dec 10))) 
+ 
+ "Be careful about the order in which you mix your functions" 
+ (= 99 (let [square-and-dec (comp dec square)] 
+ (square-and-dec 10))) 
+ 
+ 
+14 
+ 
+ 
+(defn is-even? [n] 
+ (if (= n 0) 
+ true 
+ ( not (is-even? (dec n))))) 
+ 
+(defn is-even-bigint? [n] 
+ (loop [n n 
+ acc true] 
+ (if (= n 0) 
+ false 
+ (recur (dec n) (not acc))))) 
+ 
+(defn recursive-reverse [coll] 
+ (reverse coll)) 
+ 
+(defn factorial [n] 
+ (reduce *(range 2 (inc n)))) 
+ 
+ 
+ "Recursion ends with a base case" 
+ (= true (is-even? 0)) 
+ 
+ "And starts by moving toward that base case" 
+ (= false (is-even? 1)) 
+ 
+ "Having too many stack frames requires explicit tail calls with recur" 
+ (= false (is-even-bigint? 100003N)) 
+ 
+ "Reversing directions is easy when you have not gone far" 
+ (= '(1) (recursive-reverse [1])) 
+ 
+ "Yet it becomes more difficult the more steps you take" 
+ (= '(6 5 4 3 2) (recursive-reverse [2 3 4 5 6])) 
+ 
+ "Simple things may appear simple." 
+ (= 1 (factorial 1)) 
+ 
+ "They may require other simple steps." 
+ (= 2 (factorial 2)) 
+ 
+ "Sometimes a slightly bigger step is necessary" 
+ (= 6 (factorial 3)) 
+ 
+ "And eventually you must think harder" 
+ (= 24 (factorial 4)) 
+ 
+ "You can even deal with very large numbers" 
+ (< 1000000000000000000000000N (factorial 1000N)) 
+ 
+ "But what happens when the machine limits you?" 
+ (< 1000000000000000000000000N (factorial 100003N)) 
+ 
+ 
+15 
+ 
+ 
+(def test-address 
+ {:street-address "123 Test Lane" 
+ :city "Testerville" 
+ :state "TX"}) 
+ 
+(meditations 
+ "Destructuring is an arbiter: it breaks up arguments" 
+ (= ":bar:foo" ((fn [[a b]] (str b a)) 
+ [:foo :bar])) 
+ 
+ "Whether in function definitions" 
+ (= (str "An Oxford comma list of apples, " 
+ "oranges, " 
+ "and pears.") 
+ ((fn [[a b c]] (str "An Oxford comma list of " 
+ a ", " b ", and " c ".")) 
+ ["apples" "oranges" "pears"])) 
+ 
+ "Or in let expressions" 
+ (= "Rich Hickey aka The Clojurer aka Go Time aka Lambda Guru" 
+ (let [[first-name last-name & aliases] 
+ (list "Rich" "Hickey" "The Clojurer" "Go Time" "Lambda Guru")] 
+ (clojure.string/join " aka " (conj aliases (str first-name " " last-name)))) 
+ ) 
+ 
+ "You can regain the full argument if you like arguing" 
+ (= {:original-parts ["Stephen" "Hawking"] :named-parts {:first "Stephen" :last "Hawking"}} 
+ (let [[first-name last-name :as full-name] ["Stephen" "Hawking"]] 
+ {:original-parts full-name :named-parts {:first first-name :last last-name}} )) 
+ 
+ "Break up maps by key" 
+ (= "123 Test Lane, Testerville, TX" 
+ (let [{street-address :street-address, city :city, state :state}
 
-  "They can easily emulate mapping"
-  (= '(0 1 4 9 16 25)
-     (map (fn [x] (* x x))
-          (range 6))
-     (for [x (range 6)]
-       __))
-
-  "And also filtering"
-  (= '(1 3 5 7 9)
-     (filter odd? (range 10))
-     (for [x __ :when (odd? x)]
-       x))
-
-  "Combinations of these transformations is trivial"
-  (= '(1 9 25 49 81)
-     (map (fn [x] (* x x))
-          (filter odd? (range 10)))
-     (for [x (range 10) :when __]
-       __))
-
-  "More complex transformations simply take multiple binding forms"
-  (= [[:top :left] [:top :middle] [:top :right]
-      [:middle :left] [:middle :middle] [:middle :right]
-      [:bottom :left] [:bottom :middle] [:bottom :right]]
-     (for [row [:top :middle :bottom]
-           column [:left :middle :right]]
-       __)))
+test-address] 
+(str street-address ", " city ", " state) 
+ )) 
+ 
+ "Or more succinctly" 
+ (= "123 Test Lane, Testerville, TX" 
+ (let [{:keys [street-address city state]} test-address] 
+ (str street-address ", " city ", " state))) 
+ 
+ "All together now!" 
+ (= "Test Testerson, 123 Test Lane, Testerville, TX" 
+ ((fn[[first-name last-name] {:keys [street-address city state]}] 
+(str first-name " " last-name ", " street-address ", " city ", " state)) ["Test" "Testerson"] test-address)) 
+ 
+ 
+ 
+16
+ 
+ 
+ 
+(def the-world (ref "hello")) 
+(def bizarro-world (ref {})) 
+ 
+(meditations 
+ "In the beginning, there was a word" 
+ (= "hello" (deref the-world)) 
+ 
+ "You can get the word more succinctly, but it's the same" 
+ (= "hello" @the-world) 
+ 
+ "You can be the change you wish to see in the world." 
+ (= "better" (do 
+ (dosync (ref-set the-world "better")) 
+ @the-world)) 
+ 
+ "Alter where you need not replace" 
+ (= "better!!!!!!!!!!!!" (let [exclamator (fn [x] (str x "!"))] 
+ (dosync 
+ (alter the-world exclamator) 
+ (alter the-world exclamator) 
+ (alter the-world exclamator)) 
+ @the-world)) 
+ 
+ "Don't forget to do your work in a transaction!" 
+ (= 0 (do (dosync (ref-set 
+ the-world 0)) @the-world)) 
+ 
+ "Functions passed to alter may depend on the data in the ref" 
+ (= 20 (do 
+ (dosync (alter the-world #(+ 20 %))))) 
+ 
+ "Two worlds are better than one" 
+ (= ["Real Jerry" "Bizarro Jerry"] 
+ (do 
+ (dosync 
+ (ref-set the-world {}) 
+ (alter the-world assoc :jerry "Real Jerry") 
+ (alter bizarro-world assoc :jerry "Bizarro Jerry") 
+ (vec (map #(:jerry %) (list @the-world @bizarro-world)))))) 
+ 
+ 
+17
+ 
+ 
+(def atomic-clock (atom 0)) 
+ 
+(meditations 
+ "Atoms are like refs" 
+ (= 0 @atomic-clock) 
+ 
+ "You can change at the swap meet" 
+ (= 1 (do 
+ (swap! atomic-clock inc) 
+ @atomic-clock)) 
+ 
+ "Keep taxes out of this: swapping requires no transaction" 
+ (= 5 (do 
+ (swap! atomic-clock #(+ 4 %) ) 
+ @atomic-clock)) 
+ 
+ "Any number of arguments might happen during a swap" 
+ (= 20 (do 
+ (swap! atomic-clock + 1 2 3 4 5) 
+ @atomic-clock)) 
+ 
+ "Atomic atoms are atomic" 
+ (= 20 (do 
+ (compare-and-set! atomic-clock 100 :fin) 
+ @atomic-clock)) 
+ 
+ "When your expectations are aligned with reality, things proceed that way" 
+ (= :fin (do 
+ (compare-and-set! atomic-clock 20 :fin) 
+ @atomic-clock)) 
+ 
+ 
+18
+ 
+ 
+ "Wrap a quote around a list to suppress evaluation" 
+ (= (quote (1 2 3 4 5)) '(1 2 3 4 5)) 
+ 
+ "There is a shortcut too!" 
+ (= (quote (1 2 3 4 5)) '(1 2 3 4 5)) 
+ 
+ "You can quote symbols as well as lists... without evaluation!" 
+ (= 'age (let [age 9] (quote age))) 
+ 
+ "You can use a literal list as a data collection without having Clojure try to call a function" 
+ (= (cons 1 (quote (2 3))) (list 1 2 3) (cons 1 [2 3])) 
+ 
+ "The quote affects all of its arguments, not just the top level" 
+ (= (list 1 '(+ 2 3)) '(1 (+ 2 3))) 
+ 
+ "Syntax-quote (`) acts similarly to the normal quote" 
+ (= (list 1 2 3) `(1 2 3) '(1 2 3)) 
+ 
+ "Unquote (~) within a syntax-quoted expression lets you mark specific expressions as requiring evaluation" 
+ (= (list 1 5) `(1 ~(+ 2 3)) '(1 5)))
