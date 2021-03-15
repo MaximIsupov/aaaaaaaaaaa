@@ -1,0 +1,21 @@
+x = input()
+spis = []
+nums = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+while x != "0":
+    if x.isdigit() == True:
+        spis.append(x)
+        print("$",x,"$")
+    x = input()
+print(spis)
+spis.sort()
+print(spis)
+spis.reverse()
+print(spis)
+max = 0
+for i in range(len(spis)):
+    max += int(spis[i]) * (10 ** (len(spis)-i))
+max // 10
+for i in range(max):
+    ir = i.reverse
+    if ir == i:
+print(max)
