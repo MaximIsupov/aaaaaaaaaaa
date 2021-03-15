@@ -14,8 +14,34 @@ print(spis)
 max = 0
 for i in range(len(spis)):
     max += int(spis[i]) * (10 ** (len(spis)-i))
-max // 10
-for i in range(max):
-    ir = i.reverse
-    if ir == i:
-print(max)
+max //= 10
+palindr = 0
+print("max = ", max)
+res = 0
+for i in range(max, 10, -1):
+    cur = i
+    result = []
+    while cur > 10:
+        result.append(str(cur % 10))
+        cur //= 10
+    result.append(str(cur))
+    resultInv = result.copy()
+    result.reverse()
+    if resultInv == result:
+        pal = set(result)
+        mnSpis = set(spis)
+        err = 0
+        if not pal.difference(mnSpis):
+            for j in range(len(pal)):
+                if result.count(result[j]) != spis.count(result[j]):
+                    err += 1
+            if err == 0:
+                palindr = i
+    if (i % 100 == 0) & (palindr != 0):
+        res = palindr
+if (res != 0):
+    print(res)
+else:
+    res = palindr
+    print(res)
+
