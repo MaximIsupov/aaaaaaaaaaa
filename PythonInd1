@@ -1,47 +1,39 @@
 x = input()
+nech = 0
 spis = []
+result = []
 nums = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 while x != "0":
     if x.isdigit() == True:
-        spis.append(x)
+        spis.append(int(x))
         print("$",x,"$")
     x = input()
-print(spis)
 spis.sort()
 print(spis)
-spis.reverse()
+max, min = 1, 9
+for i in range(1, len(nums) + 1):
+    nums[i-1] = spis.count(i)
+    if ((nums[i-1] % 2 != 0) & (nums[i-1] != 0)):
+        nech += 1
+print(nums)
+while nech > 1:
+    nech_num = 1
+    for i in range(len(nums)):
+        if ((nums[i] % 2 != 0) & (nums[i] != 0)):
+            nech_num = i + 1
+    spis.remove(nech_num)
+    nums[nech_num] -= 1
+    nech -= 1
+bottom = 0
+top = len(spis)-1
+for i in range(len(spis) // 2 + 1):
+    if ((spis.count(spis[i]) != 1) & (spis.count(spis[i]) != 0)):
+        temp = spis[top]
+        spis[top] = spis[spis.index(spis[i], i+1)]
+        spis[spis.index(spis[i], i+1)] = temp
+        top -= 1
+        temp = spis[bottom]
+        spis[bottom] = spis[i]
+        spis[i] = temp
+        bottom += 1
 print(spis)
-max = 0
-for i in range(len(spis)):
-    max += int(spis[i]) * (10 ** (len(spis)-i))
-max //= 10
-palindr = 0
-print("max = ", max)
-res = 0
-for i in range(max, 10, -1):
-    cur = i
-    result = []
-    while cur > 10:
-        result.append(str(cur % 10))
-        cur //= 10
-    result.append(str(cur))
-    resultInv = result.copy()
-    result.reverse()
-    if resultInv == result:
-        pal = set(result)
-        mnSpis = set(spis)
-        err = 0
-        if not pal.difference(mnSpis):
-            for j in range(len(pal)):
-                if result.count(result[j]) != spis.count(result[j]):
-                    err += 1
-            if err == 0:
-                palindr = i
-    if (i % 100 == 0) & (palindr != 0):
-        res = palindr
-if (res != 0):
-    print(res)
-else:
-    res = palindr
-    print(res)
-
