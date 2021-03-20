@@ -1,6 +1,10 @@
 spis = sorted(list([int(a) for a in input("Введите вашу строку символов: ") if a.isdigit()]))
-min_nech = min(list([a for a in range(1, 10) if (spis.count(a) % 2 != 0)]))
-spis.remove(min_nech)
+nech_spis = list([a for a in range(1, 10) if (spis.count(a) % 2 != 0)])
+if nech_spis:
+    min_nech = min(nech_spis)
+    spis.remove(min_nech)
+else:
+    min_nech = ''
 for i in range(1, 10):
     if (spis.count(i) % 2 != 0) and (i != min_nech):
         spis.remove(i)
