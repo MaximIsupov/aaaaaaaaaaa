@@ -1,0 +1,65 @@
+package com.example.myapplication;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        SharedPreferences sp;
+    }
+
+    public void login(){
+        View v = (ConstraintLayout) getLayoutInflater().inflate(R.layout.dialog_text, null);
+        final EditText log = (EditText) v.findViewById(R.id.editTextTextPersonName);
+        final EditText pass = (EditText) v.findViewById(R.id.editTextTextPersonName2);
+        SharedPreferences.Editor ed = getPreferences(MODE_PRIVATE).edit();
+        ed.putString("login", String.valueOf(log.getText()));
+        ed.putString("password", String.valueOf(pass.getText()));
+        ed.commit();
+    }
+
+    public void onClick(View view){
+        AlertDialog.Builder infoDialog = new AlertDialog.Builder(MainActivity.this);
+        infoDialog.setTitle("Войти: ");
+        infoDialog.setCancelable(false);
+        View v = (ConstraintLayout) getLayoutInflater().inflate(R.layout.dialog_text, null);
+        final EditText log = (EditText) v.findViewById(R.id.editTextTextPersonName);
+        final EditText pass = (EditText) v.findViewById(R.id.editTextTextPersonName2);
+        infoDialog.setView(v);
+        SharedPreferences sPref;
+        sPref = getPreferences(MODE_PRIVATE);
+        String logi = sPref.getString("password", "");
+        String passw = sPref.getString("login", "");
+        log.setText(logi);
+        pass.setText(passw);
+        infoDialog.setPositiveButton("Войти", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                login();
+            }
+        });
+        infoDialog.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+            }
+        });
+        infoDialog.show();
+    }
+
+}
