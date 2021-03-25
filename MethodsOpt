@@ -1,0 +1,68 @@
+22.17
+
+#include "iostream"
+using namespace std;
+
+float funct(float bet) {
+
+	return 1 - 2 * sin(bet) * sin(bet) - sin(bet);
+}
+
+void main() {
+	double pi = 3.1415926535;
+	float a = 0, R;
+	float eps = 0.001;
+	float b = 1.57;
+	float si = 0.5;
+	int iter = 0;
+	while ((a + b) / 2 > eps && iter < 1000) {
+		float mid = (a + b) / 2;
+
+		if (funct(mid - si) > funct(si + mid)) {
+			a = mid - si;
+		}
+		else {
+			b = mid + si;
+		}
+		iter++;
+	}
+	cout << (a + 1.57)*180/3.14 << endl;
+
+	system("pause");
+}
+
+22.18
+
+#include "cmath"
+#include "iostream"
+using namespace std;
+
+float funct(float a, float R) {
+
+	return (3 * sqrt(3) / 2 * a / 3 * sqrt(R * R - a / 3)) / sqrt(3) / 4 * a * a;
+}
+
+void main() {
+	float a, R;
+	cin >> R >> a;
+	float eps = 0.5;
+	float b;
+	float si = 0.2;
+	cin >> b;
+	int iter = 0;
+	while ((a + b) / 2 > eps&& iter < 1000) {
+		float mid = (a + b) / 2;
+
+		if (funct(mid - si, R) > funct(si + mid, R)) {
+			a = mid - si;
+		}
+		else {
+			b = mid + si;
+		}
+		cout << "b " << b << " a " << a << " mid " << mid << endl;
+		iter++;
+	}
+	cout << b << endl;
+
+	system("pause");
+}
