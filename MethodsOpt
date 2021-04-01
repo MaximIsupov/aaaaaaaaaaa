@@ -34,23 +34,24 @@ void main() {
 22.18
 
 #include "stdafx.h"
+#include "cmath"
 #include "iostream"
 using namespace std;
 
-float funct(float R, float x) {
-	return 3 * x * sqrt(R - (1 / 3) * x * x) - x * x * x / (2 * sqrt(R - (1 / 3) * x * x));
+float funct(float a, float R) {
+
+	return (3 * sqrt(3) / 2 * a / 3 * sqrt(R * R - a / 3)) / sqrt(3) / 4 * a * a;
 }
 
 void main() {
-	double pi = 3.1415926535;
-	float a = 0;
-	float R;
-	cin >> R;
-	float eps = 0.001;
-	float b = 10 * R;
-	float si = 0.5;
+	float a, R;
+	cin >> R >> a;
+	float eps = 0.5;
+	float b;
+	float si = 0.2;
+	cin >> b;
 	int iter = 0;
-	while ((a + b) / 2 > eps && iter < 1000) {
+	while ((a + b) / 2 > eps&& iter < 1000) {
 		float mid = (a + b) / 2;
 
 		if (funct(mid - si, R) > funct(si + mid, R)) {
@@ -59,10 +60,10 @@ void main() {
 		else {
 			b = mid + si;
 		}
+		cout << "b " << b << " a " << a << " mid " << mid << endl;
 		iter++;
-		cout << a << " " << b << endl;
 	}
-	cout << a << " " << b << endl;
+	cout << b << endl;
 
 	system("pause");
 }
