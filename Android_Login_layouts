@@ -25,7 +25,7 @@ linear_main
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="10dp"
         android:layout_marginRight="20dp"
         android:ems="10"
         android:hint="Логин"
@@ -36,7 +36,7 @@ linear_main
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:layout_marginRight="20dp"
         android:ems="10"
         android:hint="Пароль"
@@ -45,7 +45,7 @@ linear_main
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="73dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="0dp"
         android:orientation="horizontal">
 
         <Button
@@ -77,40 +77,62 @@ linear_main
             app:backgroundTint="#591010" />
     </LinearLayout>
 
-    <Button
-        android:id="@+id/button3"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="100dp"
-        android:layout_marginRight="100dp"
-        android:background="#4E0909"
-        android:onClick="deleteOnClick"
-        android:text="Удалить сохранённые данные"
-        android:textColor="#FFFFFF"
-        app:backgroundTint="#470B0B" />
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/button3"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:background="#4E0909"
+            android:onClick="deleteOnClick"
+            android:text="Удалить сохранённые данные"
+            android:textColor="#FFFFFF"
+            app:backgroundTint="#470B0B" />
+
+        <Button
+            android:id="@+id/button5"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:background="#4E0909"
+            android:onClick="changePreferences"
+            android:text="Указать настройки"
+            android:textColor="#FFFFFF"
+            app:backgroundTint="#470B0B" />
+    </LinearLayout>
 
     <Button
-        android:id="@+id/button5"
+        android:id="@+id/button10"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="100dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginRight="100dp"
-        android:background="#4E0909"
-        android:onClick="changePreferences"
-        android:text="Указать настройки"
-        android:textColor="#FFFFFF"
-        app:backgroundTint="#470B0B" />
+        android:onClick="addItem"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:text="Добавить логин в список:"
+        app:backgroundTint="#4C0707" />
 
     <TextView
         android:id="@+id/calcResult"
         android:layout_width="match_parent"
-        android:layout_height="79dp"
-        android:layout_marginTop="50dp"
+        android:layout_height="43dp"
+        android:layout_marginTop="10dp"
         android:gravity="center_horizontal"
         android:text="Здесь будет отображаться ваша информация:"
         android:textAlignment="center"
-        android:textSize="24sp" />
+        android:textSize="18sp" />
+
+    <ListView
+        android:id="@+id/lvSpisok"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </LinearLayout>
 
@@ -514,3 +536,21 @@ my123
 
     </TableLayout>
 </LinearLayout>
+
+____________________________________________________________
+
+list_item.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#670C0C"
+    android:fontFamily="sans-serif-black"
+    android:textColor="#FFFFFF"
+    android:textSize="24sp"
+    android:textStyle="bold|italic">
+
+</TextView>
+
+_____________________________________________________________________
