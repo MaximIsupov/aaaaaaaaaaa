@@ -5,7 +5,7 @@ def f2(x1, x2):
     return 16 * x2 - x1
 
 def f3(x01, x02, x1, x2, alf):
-    return -2 * x01 * (x1 - x01 * alf) - 8 * x02 * (x2 - x02 * alf)
+    return (-x1)*2*(x01-x1*alf)-16*x2*(x02-x2*alf)-x01*x2-x02*x1+2*alf*x1*x2-x1
 
 def funct(x1, x2):
     return x1 * x1 + 8 * x2 * x2 - x1 * x2 + x1
@@ -33,16 +33,19 @@ while k < n:
         a = 0
         eps = 0.001
         b = 1
-        si = 0.5
+        si = 0.1
         iterat = 0
         while(a + b) / 2 > eps and iterat < 1000:
             mid = (a + b) / 2;
-            if (f3(grad['x1'], grad['x2'], x['x1'], x['x2'], si - mid) > f3(grad['x1'], grad['x2'], x['x1'], x['x2'], si + mid)):
+            if (f3(x['x1'], x['x2'], grad['x1'], grad['x2'], mid - si) < f3(x['x1'], x['x2'],grad['x1'], grad['x2'], mid + si)):
                 a = mid - si
             else:
                 b = mid + si
             iterat+=1
+        print(iterat)
+        print(a, b)
         minim = (a + b) / 2
+        print("Альфа = ", minim)
         x['x1'] -= grad['x1'] * minim
         x['x2'] -= grad['x2'] * minim
         print(x)
@@ -56,4 +59,5 @@ print ("Ответ после цикла: ", ans)
 if ans==0:
     ans = x;
 print(ans)
+
             
