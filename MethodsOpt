@@ -1,53 +1,186 @@
-def f1(x1, x2):
-    return 2 * x1 - x2 + 1
+#include "stdafx.h"
+#include<math.h>
+#include <iostream>
 
-def f2(x1, x2):
-    return 16 * x2 - x1
+using namespace std;
 
-def f3(x01, x02, x1, x2):
-    return (2*x1*x01+16*x2*x02+x01*x2+x02*x1+x1)/(2*(x1**2)+16*(x2**2)+2*x1*x2)
+#define dim 2
 
-def funct(x1, x2):
-    return x1 * x1 + 8 * x2 * x2 - x1 * x2 + x1
+double f(double* x) {
+	return x[0] * x[0] + 8 * x[1] * x[1] - x[0] * x[1] + x[0];
+}
 
-x, e1, e2, n = {'x1':float(input()), 'x2':float(input())}, float(input()), float(input()), int(input())
-k = 0
-ans = {}
-prev = {}
-grad={}
-while k < n:
-    print(k+1, "-ая итерация:")
-    print("Ответ на начало цикла: ", ans)
-    print("Начальный вектор: ", x)
-    grad['x1'] = f1(x['x1'], x['x2'])
-    grad['x2'] = f2(x['x1'], x['x2'])
-    print("Знаечние градиента: ", grad)
-    prev['x1'] = x['x1']
-    prev['x2'] = x['x2']
-    if max(x['x1'], x['x2']) < e1:
-        print("Первое условие выхода выполнено")
-        ans = grad
-        print(x)
-        print(ans)
-        k=n
-    else:
-        a = 0
-        eps = 0.001
-        b = 1
-        si = 0.5
-        iterat = 0
-        minim = f3(x['x1'], x['x2'], grad['x1'], grad['x2'])
-        print("Альфа = ", minim)
-        x['x1'] -= grad['x1'] * minim
-        x['x2'] -= grad['x2'] * minim
-        print(x)
-        if max((x['x1']-prev['x1']),(x['x2']-prev['x2']))<e2 and abs(funct(x['x1'], x['x2']) - funct(prev['x1'], prev['x2']))<e2:
-            ans=x
-            k=n
-            print("Второе условие выхода выполнено")
-        else:
-            k+=1
-print ("Ответ после цикла: ", ans)
-if ans==0:
-    ans = x;
-print(ans)
+double* gradf(double* x) { 
+	double* g = new double[dim];
+	g[0] = 2 * x[0] - x[1] + 1;
+	g[1] = 16 * x[1] - x[0];
+
+	return g;
+}
+
+double fi(double tk, double* xk, double* dk) { 
+
+											  
+	double *arg_f = new double[dim];
+	for (int i = 0; i < dim; ++i) {
+		arg_f[i] = xk[i] + tk * dk[i];
+	}
+
+	return f(arg_f);
+}
+
+double findmin_bisect(double func(double arg, double* _vec, double* _vec2), double* vec, double* vec2, double a = 0.0, double b = 1.0, double eps = 0.0001, double delta = 0.00004) {
+	double x, y;
+
+	do {
+		x = (a + b - delta) / 2;
+		y = (a + b + delta) / 2;
+		double fx = func(x, vec, vec2), fy = func(y, vec, vec2);
+
+		if (fx < fy) {
+			b = y;
+		}
+		else if (fx > fy) {
+			a = x;
+		}
+		else if (fx == fy) {
+			a = x;
+			b = y;
+		}
+
+	} while (abs(b - a) >= 2 * eps);
+
+	return (a + b) / 2;
+}
+
+
+double* minus_vec(double* x, double* y) {
+	double* z = new double[dim];
+	for (int i = 0; i < dim; ++i) {
+		z[i] = x[i] - y[i];
+	}
+	return z;
+}
+
+double Norm2(double* x) {
+	double s = 0;
+	for (int i = 0; i < dim; ++i) {
+		s += x[i] * x[i];
+	}
+	return s;
+}
+
+int main()
+{
+	setlocale(LC_ALL, "rus");
+
+	// Шаг 1
+
+	double xk[dim] = { 1.5, 0.1 };
+	double eps1 = 0.01;
+	double eps2 = 0.1;
+	int M = 15;
+
+	// Шаг 2
+
+	int k = 0;
+
+	// Шаг 3
+
+	double xkp1[dim];
+
+	double* gradf_xk = gradf(xk);
+	double* gradf_xkm1 = new double[dim];
+
+	// Шаги 4, 5
+
+	bool k_ge_M = (k >= M),
+		NormAbs_l_eps2 = false,
+		NormGrad_l_eps1 = sqrt(Norm2(gradf_xk)) < eps1;
+
+	bool first_satisfied = false;
+
+	if (!(NormGrad_l_eps1 || k_ge_M)) {
+
+		// Шаг 6
+		
+		double* dk = new double[dim];
+		double* dkm1 = new double[dim];
+		for (int i = 0; i < dim; ++i) {
+			dkm1[i] = dk[i] = -gradf_xk[i]; // dk = dkm1 = -gradf_xk;
+		}
+
+		do {
+
+			
+			if (k > 0) {
+
+				// Шаг 7
+
+				double Beta_km1 = (Norm2(gradf_xk)) / (Norm2(gradf_xkm1));
+
+				// Шаг 8 
+
+				for (int i = 0; i < dim; ++i) {
+					dk[i] = -gradf_xk[i] + Beta_km1 * dkm1[i];
+					dkm1[i] = dk[i];
+				}
+			}
+
+			// Шаг 9
+
+			double tk_min = findmin_bisect(fi, xk, dk);
+
+			// Шаг 10
+
+			for (int i = 0; i < dim; ++i) {
+				xkp1[i] = xk[i] + tk_min * dk[i];
+			}
+
+			k++;
+
+			// Шаг 11
+
+			k_ge_M = (k >= M);
+			NormGrad_l_eps1 = (sqrt(Norm2(gradf_xk)) < eps1);
+
+			if (sqrt(Norm2(minus_vec(xkp1, xk))) < eps2 &&
+				abs(f(xkp1) - f(xk)) < eps2) {
+
+				if (!(first_satisfied)) first_satisfied = true;
+				else NormAbs_l_eps2 = true;
+
+			}
+			else if (first_satisfied) first_satisfied = false;
+
+
+
+
+			for (int i = 0; i < dim; ++i) {
+				xk[i] = xkp1[i];
+				gradf_xkm1[i] = gradf_xk[i];
+			}
+
+			gradf_xk = gradf(xk);
+
+		} while (!(NormGrad_l_eps1 || k_ge_M || NormAbs_l_eps2));
+
+
+
+	}
+
+
+
+
+
+	cout << "Точка минимума: ( ";
+	for (int i = 0; i < dim; ++i) {
+		cout << xk[i] << " ";
+	}
+	cout << ")\nЗначение функции в точке минимума = " << f(xk) << ";\n";
+
+
+	system("pause");
+	return 0;
+}
+
