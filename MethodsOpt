@@ -94,8 +94,10 @@ double** matr_invert(double** a, int n) {
 
 	double det = a[0][0] * a[1][1] - a[0][1] * a[1][0];
 
-	e[0][0] = a[1][1] / det; e[0][1] = -a[0][1] / det;
-	e[1][0] = -a[1][0] / det; e[1][1] = a[0][0] / det;
+	e[0][0] = a[1][1] / det; 
+	e[0][1] = -a[0][1] / det;
+	e[1][0] = -a[1][0] / det;
+	e[1][1] = a[0][0] / det;
 
 	return e;
 }
@@ -129,7 +131,7 @@ int main()
 
 	//ШАГ 3
 
-	double xk[dim] = { -1.2, 1.0 };
+	double xk[dim] = { 1.5, 0.1 };
 	double xkp1[dim];
 
 	double* gradf_xk = gradf(xk);
@@ -157,8 +159,11 @@ int main()
 
 			dk = negative(matr_times_vector(matr_gess, gradf_xk, 2, 2));
 
+//			double tk_min = findmin_bisect(fi, xk, dk);
+//			cout << endl << tk_min << endl << endl;
+
 			for (int i = 0; i < dim; ++i) {
-				xkp1[i] = xk[i] + dk[i];
+				xkp1[i] = xk[i] + dk[i];// tk_min * dk[i];
 			}
 
 			k++;
@@ -184,8 +189,7 @@ int main()
 				xk[i] = xkp1[i];
 			}
 
-		} 
-		while (!(NormGrad_l_eps1 || k_ge_M || NormAbs_l_eps2));
+		} while (!(NormGrad_l_eps1 || k_ge_M || NormAbs_l_eps2));
 
 		for (int i = 0; i < dim; ++i)
 			delete[] matr_gess[i];
@@ -202,4 +206,5 @@ int main()
 	system("pause");
 	return 0;
 }
+
 
