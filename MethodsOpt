@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include<math.h>
 #include <iostream>
 
@@ -10,7 +9,7 @@ double f(double* x) {
 	return x[0] * x[0] + 8 * x[1] * x[1] - x[0] * x[1] + x[0];
 }
 
-double* gradf(double* x) { 
+double* gradf(double* x) { // вектор градиента
 	double* g = new double[dim];
 	g[0] = 2 * x[0] - x[1] + 1;
 	g[1] = 16 * x[1] - x[0];
@@ -18,17 +17,36 @@ double* gradf(double* x) {
 	return g;
 }
 
-double fi(double tk, double* xk, double* dk) { 
-
-											  
-	double *arg_f = new double[dim];
+double fi(double tk, double* xk, double* dk) { // функция ф(tk), минимум которой станет величиной шага
+	double* arg_f = new double[dim];
 	for (int i = 0; i < dim; ++i) {
 		arg_f[i] = xk[i] + tk * dk[i];
 	}
 
 	return f(arg_f);
+
 }
 
+double** gesse_matrix(double* x) { // Матрица Гессе
+	double** h = new double* [dim];
+	for (int i = 0; i < dim; ++i)
+		h[i] = new double[dim];
+
+	h[0][0] = 2; h[0][1] = -1;
+	h[1][0] = -1; h[1][1] = 16;
+
+	return h;
+}
+
+double* negative(double* x) {
+	double* z = new double[dim];
+	for (int i = 0; i < dim; ++i) {
+		z[i] = -x[i];
+	}
+	return z;
+}
+
+// функция поиска минимума методом дихотомии
 double findmin_bisect(double func(double arg, double* _vec, double* _vec2), double* vec, double* vec2, double a = 0.0, double b = 1.0, double eps = 0.0001, double delta = 0.00004) {
 	double x, y;
 
@@ -53,7 +71,6 @@ double findmin_bisect(double func(double arg, double* _vec, double* _vec2), doub
 	return (a + b) / 2;
 }
 
-
 double* minus_vec(double* x, double* y) {
 	double* z = new double[dim];
 	for (int i = 0; i < dim; ++i) {
@@ -70,29 +87,55 @@ double Norm2(double* x) {
 	return s;
 }
 
+double** matr_invert(double** a, int n) {
+	double** e = new double* [n];
+	for (int i = 0; i < n; ++i)
+		e[i] = new double[n];
+
+	double det = a[0][0] * a[1][1] - a[0][1] * a[1][0];
+
+	e[0][0] = a[1][1] / det; e[0][1] = -a[0][1] / det;
+	e[1][0] = -a[1][0] / det; e[1][1] = a[0][0] / det;
+
+	return e;
+}
+
+double* matr_times_vector(double** matr, double* vec, int matr_str, int matr_col) {
+	double* res = new double[matr_str];
+	for (int i = 0; i < matr_str; ++i) {
+		double sum = 0.0;
+		for (int k = 0; k < matr_col; ++k) {
+			sum += matr[i][k] * vec[k];
+		}
+		res[i] = sum;
+	}
+
+	return res;
+}
+
 int main()
 {
 	setlocale(LC_ALL, "rus");
 
-	// Шаг 1
+	//ШАГ 1
 
-	double xk[dim] = { 1.5, 0.1 };
+	int M = 15;
 	double eps1 = 0.01;
 	double eps2 = 0.1;
-	int M = 15;
 
-	// Шаг 2
+	//ШАГ 2
 
 	int k = 0;
 
-	// Шаг 3
+	//ШАГ 3
 
+	double xk[dim] = { -1.2, 1.0 };
 	double xkp1[dim];
 
 	double* gradf_xk = gradf(xk);
 	double* gradf_xkm1 = new double[dim];
 
-	// Шаги 4, 5
+	//ШАГ 4, 5
 
 	bool k_ge_M = (k >= M),
 		NormAbs_l_eps2 = false,
@@ -102,44 +145,28 @@ int main()
 
 	if (!(NormGrad_l_eps1 || k_ge_M)) {
 
-		// Шаг 6
-		
-		double* dk = new double[dim];
-		double* dkm1 = new double[dim];
-		for (int i = 0; i < dim; ++i) {
-			dkm1[i] = dk[i] = -gradf_xk[i]; // dk = dkm1 = -gradf_xk;
-		}
+		//ШАГ 6
 
+
+
+		double* dk = new double[dim];
+
+
+		double** matr_gess = matr_invert(gesse_matrix(xk), dim);
 		do {
 
-			
-			if (k > 0) {
-
-				// Шаг 7
-
-				double Beta_km1 = (Norm2(gradf_xk)) / (Norm2(gradf_xkm1));
-
-				// Шаг 8 
-
-				for (int i = 0; i < dim; ++i) {
-					dk[i] = -gradf_xk[i] + Beta_km1 * dkm1[i];
-					dkm1[i] = dk[i];
-				}
-			}
-
-			// Шаг 9
-
-			double tk_min = findmin_bisect(fi, xk, dk);
-
-			// Шаг 10
+			dk = negative(matr_times_vector(matr_gess, gradf_xk, 2, 2));
 
 			for (int i = 0; i < dim; ++i) {
-				xkp1[i] = xk[i] + tk_min * dk[i];
+				xkp1[i] = xk[i] + dk[i];
 			}
 
 			k++;
+			gradf_xk = gradf(xkp1);
 
-			// Шаг 11
+			// ШАГ 11
+
+
 
 			k_ge_M = (k >= M);
 			NormGrad_l_eps1 = (sqrt(Norm2(gradf_xk)) < eps1);
@@ -153,32 +180,24 @@ int main()
 			}
 			else if (first_satisfied) first_satisfied = false;
 
-
-
-
 			for (int i = 0; i < dim; ++i) {
 				xk[i] = xkp1[i];
-				gradf_xkm1[i] = gradf_xk[i];
 			}
 
-			gradf_xk = gradf(xk);
+		} 
+		while (!(NormGrad_l_eps1 || k_ge_M || NormAbs_l_eps2));
 
-		} while (!(NormGrad_l_eps1 || k_ge_M || NormAbs_l_eps2));
-
-
-
+		for (int i = 0; i < dim; ++i)
+			delete[] matr_gess[i];
 	}
-
-
-
-
 
 	cout << "Точка минимума: ( ";
 	for (int i = 0; i < dim; ++i) {
 		cout << xk[i] << " ";
 	}
-	cout << ")\nЗначение функции в точке минимума = " << f(xk) << ";\n";
+	cout << ")\nЗначение функции в этой точке = " << f(xk) << ";\n";
 
+	cout << "\nКоличество шагов: " << k << "\n";
 
 	system("pause");
 	return 0;
